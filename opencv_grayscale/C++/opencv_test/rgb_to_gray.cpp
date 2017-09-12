@@ -29,7 +29,8 @@ int main(void)
 	Size video_size = Size((int)input.get(CAP_PROP_FRAME_WIDTH),
 							(int)input.get(CAP_PROP_FRAME_HEIGHT));
 
-	output.open("ouput.avi", VideoWriter::fourcc('X', 'V', 'I', 'D'),
+	output.open("ouput.avi", 
+				VideoWriter::fourcc('X', 'V', 'I', 'D'),
 				input.get(CAP_PROP_FPS),
 				video_size,
 				true);
@@ -46,14 +47,15 @@ int main(void)
 	namedWindow("OutputVideo", CV_WINDOW_AUTOSIZE);
 
 	Mat input_frame;
-	Mat output_frame;
+	Mat output_frame(video_size, CV_8UC1);
 
 	cout << "If you want stop, push 'ESC' key" << endl;
 	for (;;) {
 		input >> input_frame;
+
 		/// The function below does the same thing
 		/// In addition, it's faster than my code...
-		///cvtColor(input_frame, output_frame, COLOR_BGR2GRAY);
+		/// cvtColor(input_frame, output_frame, COLOR_BGR2GRAY);
 		ConvertGray(input_frame, output_frame);
 		output << output_frame;
 
@@ -69,10 +71,9 @@ int main(void)
 
 
 void ConvertGray(Mat & _input, Mat & _output) {
-	_input.copyTo(_output);
-
-	uint rows = _input.rows; 
+	uint rows = _input.rows;
 	uint cols = _input.cols;
+	uint channel = _input.channels();
 
 	// Convert to gray
 	uchar rgb_to_gray;
@@ -80,15 +81,13 @@ void ConvertGray(Mat & _input, Mat & _output) {
 
 	for (uint j = 0; j < rows; j++) {
 		for (uint i = 0; i < cols; i++) {
-			img_blue = _input.at<cv::Vec3b>(j, i)[0];
-			img_green = _input.at<cv::Vec3b>(j, i)[1];
-			img_red = _input.at<cv::Vec3b>(j, i)[2];
+			img_blue = _input.data[channel * (j * cols + i)];
+			img_green = _input.data[channel * (j * cols + i) + 1];
+			img_red = _input.data[channel * (j * cols + i) + 2];
+			
+			rgb_to_gray = (uchar)((img_blue + img_green + img_red) / 3);
 
-			rgb_to_gray = (uchar)((img_blue + img_green + img_red) /  3);
-
-			for (int k = 0; k < 3; k++) {
-				_output.at<cv::Vec3b>(j, i)[k] = rgb_to_gray;
-			}
+			*(_output.ptr<uchar>(j, i)) = rgb_to_gray;
 		}
 	}
 }
