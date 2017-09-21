@@ -4,6 +4,6 @@
 
 ## by BbChip (Univercity of seoil, majoring in Computer electronic, Junior)
 
-## Project list
+### Project list
 - Grayscale converting
 - Object detection
