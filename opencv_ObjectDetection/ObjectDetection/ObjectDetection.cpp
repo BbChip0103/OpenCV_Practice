@@ -62,17 +62,15 @@ int main(void)
 		bg->apply(input_frame, filter_frame);
 
 		/// Remove shadow
-		threshold(filter_frame, filter_frame, 150, 255, THRESH_BINARY);//회색(그림자) 지우기
+		threshold(filter_frame, filter_frame, 150, 255, THRESH_BINARY);
 		
 		/// Fill in the blanks due to shadow removal
-		dilate(filter_frame, filter_frame, Mat(2, 2, CV_8U)); //팽창, 밝은 영역 확장
+		dilate(filter_frame, filter_frame, Mat(2, 2, CV_8U));
 		
 		/// Local Averaging : blur(spImg, localAvgImg, Size(5, 5)) 
-		///	주변 픽셀들 더해서 평균값 색출
 		/// Gaussian Smoothing : GaussianBlur(filter_frame, filter_frame, Size(3, 3), 1); 
-		///	주변 픽셀들 더하는데 가중치를 둠
 		/// MedianBlur filtering : medianBlur(filter_frame, filter_frame, 5); 
-		///	주변 픽셀들 값 정렬시켜서 중간값 색출
+
 		// GaussianBlur(filter_frame, filter_frame, Size(7, 7), 1);
 		medianBlur(filter_frame, filter_frame, 7);
 
